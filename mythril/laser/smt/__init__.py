@@ -116,7 +116,9 @@ class _SmtSymbolFactory(SymbolFactory[SMTBool, BitVec]):
 
     @staticmethod
     def BitVecSym(name: str, size: int, annotations: Annotations = None) -> BitVec:
-        """Creates a new bit vector with a symbolic value."""
+        """Creates a new bit vector with a symbolic value.
+        기호 값을 사용하여 새 비트 벡터를 만듭니다.
+        """
         raw = z3.BitVec(name, size)
         return BitVec(raw, annotations)
 

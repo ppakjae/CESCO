@@ -33,6 +33,9 @@ from mythril.analysis.report import Report
 
 from mythril.__version__ import __version__ as VERSION
 
+from mythril.interfaces.show_class_structure import show_class_structure
+import pprint
+
 # Initialise core Mythril Component
 _ = MythrilPluginLoader()
 
@@ -94,6 +97,8 @@ def exit_with_error(format_, message):
 def get_runtime_input_parser() -> ArgumentParser:
     """
     Returns Parser which handles input
+    입력을 처리하는 파서를 반환합니다
+    :return : 입력을 처리하는 파서
     :return: Parser which handles input
     """
     parser = ArgumentParser(add_help=False)
@@ -158,6 +163,8 @@ def get_safe_functions_parser() -> ArgumentParser:
 def get_output_parser() -> ArgumentParser:
     """
     Get parser which handles output
+    출력을 처리하는 파서 가져오기
+    :return: 출력을 처리하는 파서
     :return: Parser which handles output
     """
     parser = argparse.ArgumentParser(add_help=False)
@@ -175,6 +182,8 @@ def get_output_parser() -> ArgumentParser:
 def get_rpc_parser() -> ArgumentParser:
     """
     Get parser which handles RPC flags
+    RPC 플래그를 처리하는 파서 가져오기. => 파서 설정.
+    remote procedure call
     :return: Parser which handles rpc inputs
     """
     parser = argparse.ArgumentParser(add_help=False)
@@ -186,7 +195,7 @@ def get_rpc_parser() -> ArgumentParser:
     )
     parser.add_argument(
         "--rpctls", type=bool, default=False, help="RPC connection over TLS"
-    )
+    )# transfer layer secure
     parser.add_argument("--infura-id", help="set infura id for onchain analysis")
 
     return parser
@@ -195,6 +204,8 @@ def get_rpc_parser() -> ArgumentParser:
 def get_utilities_parser() -> ArgumentParser:
     """
     Get parser which handles utilities flags
+    유틸리티 플래그를 처리하는 파서 가져오기
+    :return: 유틸리티 플래그를 처리하는 파서
     :return: Parser which handles utility flags
     """
     parser = argparse.ArgumentParser(add_help=False)
@@ -241,22 +252,22 @@ def create_concolic_parser(parser: ArgumentParser) -> ArgumentParser:
 def main() -> None:
     """The main CLI interface entry point."""
 
-    rpc_parser = get_rpc_parser()
-    utilities_parser = get_utilities_parser()
-    runtime_input_parser = get_runtime_input_parser()
-    creation_input_parser = get_creation_input_parser()
-    output_parser = get_output_parser()
+    rpc_parser = get_rpc_parser() # RPC 파서 관련 옵션
+    utilities_parser = get_utilities_parser() # 유틸리티 관련 옵션
+    runtime_input_parser = get_runtime_input_parser() # 입력 인풋을 처리하는 옵션, address: -a,
+    creation_input_parser = get_creation_input_parser() # 입력 인풋을 처리하는 옵션,codefile:     -f,bytecode:    -c
+    output_parser = get_output_parser() # 출력을 처리하는 옵션
 
     parser = argparse.ArgumentParser(
         description="Security analysis of Ethereum smart contracts"
     )
-    parser.add_argument("--epic", action="store_true", help=argparse.SUPPRESS)
+    parser.add_argument("--epic", action="store_true", help=argparse.SUPPRESS) # store_true 그 자체로 true/flase
     parser.add_argument(
         "-v", type=int, help="log level (0-5)", metavar="LOG_LEVEL", default=2
-    )
+    ) # 터미널에 log level을 처리.
 
-    subparsers = parser.add_subparsers(dest="command", help="Commands")
-    safe_function_parser = subparsers.add_parser(
+    subparsers = parser.add_subparsers(dest="command", help="Commands") # 서브파서로 command에 해당하는 부분
+    safe_function_parser = subparsers.add_parser(# symbolic execution을 사용하여 완전히 안전한 function을 check
         SAFE_FUNCTIONS_COMMAND,
         help="Check functions which are completely safe using symbolic execution",
         parents=[
@@ -268,7 +279,7 @@ def main() -> None:
         ],
         formatter_class=RawTextHelpFormatter,
     )
-    analyzer_parser = subparsers.add_parser(
+    analyzer_parser = subparsers.add_parser( # smart contract analysis
         ANALYZE_LIST[0],
         help="Triggers the analysis of the smart contract",
         parents=[
@@ -281,8 +292,8 @@ def main() -> None:
         aliases=ANALYZE_LIST[1:],
         formatter_class=RawTextHelpFormatter,
     )
-    create_safe_functions_parser(safe_function_parser)
-    create_analyzer_parser(analyzer_parser)
+    create_safe_functions_parser(safe_function_parser) # safe function에 관련한 옵션들 추가.
+    create_analyzer_parser(analyzer_parser) # 분석에 관련한 옵션들 추가
 
     disassemble_parser = subparsers.add_parser(
         DISASSEMBLE_LIST[0],
@@ -296,7 +307,7 @@ def main() -> None:
         ],
         formatter_class=RawTextHelpFormatter,
     )
-    create_disassemble_parser(disassemble_parser)
+    create_disassemble_parser(disassemble_parser) # disassemble 관련 옵션 추가(solidity file append)
 
     if PluginDiscovery().is_installed("myth_concolic_execution"):
         concolic_parser = subparsers.add_parser(
@@ -336,8 +347,8 @@ def main() -> None:
 
     # Get config values
 
-    args = parser.parse_args()
-    parse_args_and_execute(parser=parser, args=args)
+    args = parser.parse_args() #실제 입력 받아오기
+    parse_args_and_execute(parser=parser, args=args) # 파싱 후 실행
 
 
 def create_disassemble_parser(parser: ArgumentParser):
@@ -427,7 +438,7 @@ def add_analysis_args(options):
 
     :param options: Analysis Options
     """
-
+    # 보안 분석 모듈의 쉼표 목록
     options.add_argument(
         "-m",
         "--modules",
@@ -458,8 +469,8 @@ def add_analysis_args(options):
         type=str,
         default=None,
         help="The possible transaction sequences to be executed. "
-        "Like [[func_hash1, func_hash2], [func_hash2, func_hash3]] where the first transaction is constrained "
-        "with func_hash1 and func_hash2, and the second tx is constrained with func_hash2 and func_hash3. Use -1 as a proxy for fallback() function and -2 for receive() function.",
+        "Like [[func_hash1, func_hash2], [func_hash2, func_hash3]] where for the first transaction is constrained "
+        "with func_hash1 and func_hash2, and the second tx is constrained with func_hash2 and func_hash3",
     )
     options.add_argument(
         "--beam-search",
@@ -595,12 +606,12 @@ def validate_args(args: Namespace):
     if args.__dict__.get("v", False):
         if 0 <= args.v < 6:
             log_levels = [
-                logging.NOTSET,
-                logging.CRITICAL,
-                logging.ERROR,
-                logging.WARNING,
-                logging.INFO,
-                logging.DEBUG,
+                logging.NOTSET, # 0
+                logging.CRITICAL, # 1
+                logging.ERROR, # 2
+                logging.WARNING, # 3
+                logging.INFO, # 4
+                logging.DEBUG, # 5
             ]
             coloredlogs.install(
                 fmt="%(name)s [%(levelname)s]: %(message)s", level=log_levels[args.v]
@@ -611,14 +622,10 @@ def validate_args(args: Namespace):
                 args.outform, "Invalid -v value, you can find valid values in usage"
             )
 
-    if args.command in DISASSEMBLE_LIST and len(args.solidity_files) > 1:
+    if args.command in DISASSEMBLE_LIST and len(args.solidity_files) > 1: # disassemble은 하나의 파일만 가능
         exit_with_error("text", "Only a single arg is supported for using disassemble")
 
     if args.__dict__.get("transaction_sequences", None):
-        if args.__dict__.get("disable_dependency_pruning", False) is False:
-            log.warning(
-                "It is advised to disable dependency pruning (use the flag --disable-dependency-pruning) when specifying transaction sequences."
-            )
         try:
             args.transaction_sequences = literal_eval(str(args.transaction_sequences))
         except ValueError:
@@ -627,8 +634,7 @@ def validate_args(args: Namespace):
                 "The transaction sequence is in incorrect format, It should be "
                 "[list of possible function hashes in 1st transaction, "
                 "list of possible func hashes in 2nd tx, ...] "
-                "If any list is empty then all possible functions are considered for that transaction."
-                "Use -1 as a proxy for fallback() and -2 for receive() function.",
+                "If any list is empty then all possible functions are considered for that transaction",
             )
         if len(args.transaction_sequences) != args.transaction_count:
             args.transaction_count = len(args.transaction_sequences)
@@ -649,6 +655,7 @@ def validate_args(args: Namespace):
 
 def set_config(args: Namespace):
     """
+    # 네트워킹관련 on block과 통신하기 위한
     Set config based on args
     :param args:
     :return: modified config
@@ -756,6 +763,7 @@ def execute_command(
         print(storage)
 
     elif args.command in DISASSEMBLE_LIST:
+        # show_class_structure(args)
         if disassembler.contracts[0].code:
             print("Runtime Disassembly: \n" + disassembler.contracts[0].get_easm())
         if disassembler.contracts[0].creation_code:
@@ -783,6 +791,7 @@ def execute_command(
             exit_with_error("text", "Analysis error encountered: " + format(e))
 
     elif args.command in ANALYZE_LIST:
+        # print(args)
         analyzer = MythrilAnalyzer(
             strategy=strategy, disassembler=disassembler, address=address, cmd_args=args
         )
@@ -880,13 +889,13 @@ def parse_args_and_execute(parser: ArgumentParser, args: Namespace) -> None:
     :param args: The args
     """
 
-    if args.epic:
+    if args.epic: # epic일 때 처리
         path = os.path.dirname(os.path.realpath(__file__))
         sys.argv.remove("--epic")
         os.system(" ".join(sys.argv) + " | python3 " + path + "/epic.py")
         sys.exit()
 
-    if args.command not in COMMAND_LIST or args.command is None:
+    if args.command not in COMMAND_LIST or args.command is None: # comman가 잘못 입력 되었을 때
         parser.print_help()
         sys.exit()
 

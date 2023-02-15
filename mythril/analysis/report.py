@@ -50,7 +50,7 @@ class Issue:
         :param severity: The severity of the issue
         :param description_head: The top part of description
         :param description_tail: The bottom part of the description
-        :param transaction_sequence: The transaction sequence
+        :param debug: The transaction sequence
         """
         self.title = title
         self.contract = contract
@@ -146,7 +146,11 @@ class Issue:
         """
         if self.address and isinstance(contract, SolidityContract):
             is_constructor = False
-            if self.function == "constructor":
+            if (
+                contract.creation_code
+                in self.transaction_sequence["steps"][-1]["input"]
+                and self.function == "constructor"
+            ):
                 is_constructor = True
 
             if self.source_location:

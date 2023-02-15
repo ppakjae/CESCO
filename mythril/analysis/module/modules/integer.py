@@ -26,6 +26,8 @@ from mythril.laser.smt import (
     And,
 )
 
+from mythril.interfaces.show_class_structure import show_class_structure
+
 import logging
 
 log = logging.getLogger(__name__)
@@ -111,7 +113,7 @@ class IntegerArithmetics(DetectionModule):
         """
 
         opcode = state.get_current_instruction()["opcode"]
-
+        
         funcs = {
             "ADD": [self._handle_add],
             "SUB": [self._handle_sub],
@@ -128,6 +130,10 @@ class IntegerArithmetics(DetectionModule):
             result = func(state)
             if result and len(result) > 0:
                 results += result
+        #         print("=================result=========================")
+        #         print(func)
+        #         show_class_structure(result)
+
         return results
 
     def _get_args(self, state):
@@ -273,7 +279,7 @@ class IntegerArithmetics(DetectionModule):
                     constraints = ostate.world_state.constraints + [
                         annotation.constraint
                     ]
-                    solver.get_model(constraints)
+                    solver.get_model(constraints) # 아마도 에러나는 부분
                     self._ostates_satisfiable.add(ostate)
                 except:
                     self._ostates_unsatisfiable.add(ostate)

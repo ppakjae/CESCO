@@ -8,6 +8,9 @@ from mythril.support.support_utils import sha3
 from mythril.disassembler.disassembly import Disassembly
 from mythril.support.support_utils import get_code_hash
 
+########
+from mythril.interfaces import show_class_structure
+
 log = logging.getLogger(__name__)
 
 
@@ -35,10 +38,51 @@ class EVMContract(persistent.Persistent):
         self.name = name
         self.code = code
         self.disassembly = Disassembly(code, enable_online_lookup=enable_online_lookup)
-
+	#runtime disassembly
+	#disassemly
         self.creation_disassembly = Disassembly(
             creation_code, enable_online_lookup=enable_online_lookup
         )
+
+        
+        
+        '''
+        print("====================Disassembly====================")
+        self.printDetail("bytecode")
+        self.printDetail("instruction_list")
+        self.printDetail("func_hashes")
+        self.printDetail("function_name_to_address")
+        self.printDetail("address_to_function_name")
+        self.printDetail("enable_online_lookup")
+        self.printDetail("assign_bytecode")
+        
+        print(self.disassembly)
+        print("===================================================")
+        print()
+        
+        print("====================CreationDisassembly====================")
+        
+        self.printDetail("bytecode")
+        self.printDetail("instruction_list")
+        self.printDetail("func_hashes")
+        self.printDetail("function_name_to_address")
+        self.printDetail("address_to_function_name")
+        self.printDetail("enable_online_lookup")
+        self.printDetail("assign_bytecode")
+        
+        print(self.creation_disassembly)
+        print("===================================================")
+        print()
+        
+        print("====================EVMContract====================")
+        self.printDetail("creation_code")
+        self.printDetail("code")
+        self.printDetail("name")
+        self.printDetail("disassembly")
+        self.printDetail("creation_disassembly")
+        print("===================================================")
+        print()
+        '''
 
     @property
     def bytecode_hash(self):
@@ -117,3 +161,40 @@ class EVMContract(persistent.Persistent):
                 str_eval += '"' + sign_hash + '" in self.disassembly.func_hashes'
 
         return eval(str_eval.strip())
+        
+    def printDetail(self, value):
+        print()
+        print("self." + value)
+        
+        #value = self.value
+        if value == "code":
+            value = self.code
+        elif value == "creation_code":
+            value = self.creation_code
+        elif value == "name":
+            value = self.name
+        elif value == "disassembly":
+            value = self.disassembly        
+        elif value == "creation_disassembly":
+            value = self.creation_disassembly
+        '''
+        elif value == "bytecode":
+            value = self.bytecode
+        elif value == "instruction_list":
+            value = self.instruction_list
+        elif value == "func_hashes":
+            value = self.func_hashes
+        elif value == "function_name_to_address":
+            value = self.function_name_to_address        
+        elif value == "address_to_function_name":
+            value = self.address_to_function_name
+        elif value == "enable_online_lookup":
+            value = self.enable_online_lookup     
+        elif value == "assign_bytecode":
+            value = self.assign_bytecode     
+        '''
+        
+        print(type(value))
+        print(value)
+        print()
+

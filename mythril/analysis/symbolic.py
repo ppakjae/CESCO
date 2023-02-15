@@ -42,6 +42,9 @@ class SymExecWrapper:
 
     Symbolically executes the code and does a bit of pre-analysis for
     convenience.
+    레이저 심볼릭 가상 시스템의 래퍼 클래스입니다.
+
+    기호적으로 코드를 실행하고 편의를 위해 약간의 사전 분석을 합니다.
     """
 
     def __init__(
@@ -65,7 +68,9 @@ class SymExecWrapper:
 
         :param contract: Contract to symbolically execute
         :param address: Address of the contract to symbolically execute
+                        symbolic execution을 실행할 계약의 주소
         :param strategy: Execution strategy to use (bfs, dfs, etc)
+                        사용할 실행 전략(bfs, dfs 등)
         :param dynloader: Dynamic Loader
         :param max_depth: Max analysis depth
         :param execution_timeout: Timeout for the entire analysis
@@ -73,9 +78,11 @@ class SymExecWrapper:
         :param transaction_count: Number of transactions to symbolically execute
         :param modules: Analysis modules to run during analysis
         :param compulsory_statespace: Boolean indicating whether or not the statespace should be saved
+                                    상태 공간을 저장할지 여부를 나타내는 부울
         :param iprof: Instruction Profiler
         :param disable_dependency_pruning: Boolean indicating whether dependency pruning should be disabled
         :param run_analysis_modules: Boolean indicating whether analysis modules should be executed
+                                    # 분석 모듈의 실행 여부를 나타내는 부울
         :param enable_coverage_strategy: Boolean indicating whether the coverage strategy should be enabled
         :param custom_modules_directory: The directory to read custom analysis modules from
         """
@@ -110,7 +117,7 @@ class SymExecWrapper:
         requires_statespace = (
             compulsory_statespace
             or len(ModuleLoader().get_detection_modules(EntryPoint.POST, modules)) > 0
-        )
+        ) # boolean type
         if not contract.creation_code:
             self.accounts = {hex(ACTORS.attacker.value): attacker_account}
         else:

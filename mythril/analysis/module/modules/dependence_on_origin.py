@@ -23,7 +23,9 @@ class TxOriginAnnotation:
 
 
 class TxOrigin(DetectionModule):
-    """This module detects whether control flow decisions are made based on the transaction origin."""
+    """This module detects whether control flow decisions are made based on the transaction origin.
+    이 모듈은 트랜잭션 ORIGIN 기반으로 제어 흐름 결정이 이루어지는지 여부를 감지합니다.
+    """
 
     name = "Control flow depends on tx.origin"
     swc_id = TX_ORIGIN_USAGE
@@ -53,6 +55,7 @@ class TxOrigin(DetectionModule):
         if state.get_current_instruction()["opcode"] == "JUMPI":
             # We're in JUMPI prehook
 
+            
             for annotation in state.mstate.stack[-2].annotations:
 
                 if isinstance(annotation, TxOriginAnnotation):
@@ -71,6 +74,12 @@ class TxOrigin(DetectionModule):
                         "inadvertently authorizes a smart contract to perform an action on their behalf. It is "
                         "recommended to use msg.sender instead."
                     )
+                    '''
+                    "tx.origin 환경 변수가 제어 흐름 결정에 영향을 미치는 것으로 확인되었습니다. 
+                    tx.origin을 보안 제어로 사용하면 사용자가 실수로 
+                    스마트 계약에서 작업을 대신 수행하도록 권한을 부여하는 상황이 발생할 수 있습니다. 
+                    대신 msg.sender를 사용하는 것이 좋습니다."
+                    '''
 
                     severity = "Low"
 

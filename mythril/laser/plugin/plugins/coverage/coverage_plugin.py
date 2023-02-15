@@ -100,6 +100,7 @@ class InstructionCoveragePlugin(LaserPlugin):
     def _get_covered_instructions(self) -> int:
         """Gets the total number of covered instructions for all accounts in
         the svm.
+        SVM의 모든 계정에 대해 적용되는 총 지침 수를 가져옵니다.
         :return:
         """
         total_covered_instructions = 0

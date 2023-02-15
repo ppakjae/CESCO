@@ -57,9 +57,12 @@ def get_transaction_sequence(
     """Generate concrete transaction sequence.
     Note: This function only considers the constraints in constraint argument,
     which in some cases is expected to differ from global_state's constraints
-
+    구체적인 트랜잭션 시퀀스를 생성합니다.
+    참고: 이 함수는 제약 조건 인수의 제약 조건만 고려합니다,
+    어떤 경우에는 global_state의 제약 조건과 다를 것으로 예상된다
     :param global_state: GlobalState to generate transaction sequence for
     :param constraints: list of constraints used to generate transaction sequence
+    기본적인 트랜잭션을 성공할 수 있는 지 테스트
     """
     transaction_sequence = global_state.world_state.transaction_sequence
     concrete_transactions = []
@@ -109,7 +112,7 @@ def _add_calldata_placeholder(
     transaction_sequence: List[BaseTransaction],
 ):
     """
-    Adds a calldata placeholder into the concrete transactions
+    Add's a calldata placeholder into the concrete transactions
     :param concrete_transactions:
     :param transaction_sequence:
     :return:
@@ -187,6 +190,8 @@ def _get_concrete_state(
 def _get_concrete_transaction(model: z3.Model, transaction: BaseTransaction):
     """Gets a concrete transaction from a transaction and z3 model"""
     # Get concrete values from transaction
+    #트랜잭션 및 z3 모델에서 구체적인 트랜잭션을 가져옵니다.""
+    # 트랜잭션에서 구체적인 값 가져오기
     address = hex(transaction.callee_account.address.value)
     value = model.eval(transaction.call_value.raw, model_completion=True).as_long()
     caller = "0x" + (

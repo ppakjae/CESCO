@@ -42,7 +42,6 @@ class StateChangeCallsAnnotation(StateAnnotation):
     def get_issue(
         self, global_state: GlobalState, detector: DetectionModule
     ) -> Optional[PotentialIssue]:
-
         if not self.state_change_states:
             return None
         constraints = Constraints()
@@ -146,9 +145,6 @@ class StateChangeAfterCall(DetectionModule):
             pass
 
     def _analyze_state(self, global_state: GlobalState) -> List[PotentialIssue]:
-
-        if global_state.environment.active_function_name == "constructor":
-            return []
 
         annotations = cast(
             List[StateChangeCallsAnnotation],
