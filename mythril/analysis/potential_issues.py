@@ -83,7 +83,8 @@ def check_potential_issues(state: GlobalState) -> None:
     """
     Called at the end of a transaction, checks potential issues, and
     adds valid issues to the detector.
-
+    트랜잭션의 끝에 호출되어 잠재적인 문제를 확인하고
+    디텍터에 유효한 문제를 추가합니다.
     :param state: The final global state of a transaction
     :return:
     """

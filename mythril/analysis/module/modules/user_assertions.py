@@ -73,6 +73,7 @@ class UserAssertions(DetectionModule):
                         "string",
                         bytes(
                             state.mstate.memory[
+                                # word 단위 관련
                                 mem_start.value + 32 : mem_start.value + size.value
                             ]
                         ),

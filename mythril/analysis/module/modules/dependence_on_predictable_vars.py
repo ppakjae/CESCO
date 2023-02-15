@@ -94,6 +94,12 @@ class PredictableVariables(DetectionModule):
                             "as sources of randomness and be aware that use of these variables introduces "
                             "a certain level of trust into miners."
                         )
+                        '''
+                        "코인 베이스, 가스 한도, 블록 번호, 타임스탬프와 같은 변수의 값은 예측 가능하며 
+                        악의적인 광부에 의해 조작될 수 있습니다. 또한 공격자는 이전 블록의 해시를 알고 있습니다. 
+                        이러한 환경 변수를 임의성의 원천으로 사용하지 말고 
+                        이러한 변수를 사용하면 광부에게 일정 수준의 신뢰를 제공한다는 것을 알아야 합니다."
+                        '''
 
                         """
                         Usually report low severity except in cases where the hash of a previous block is used to
@@ -140,7 +146,9 @@ class PredictableVariables(DetectionModule):
                 param = state.mstate.stack[-1]
 
                 constraint = [
+                    # 다음 블록이여야 하니까
                     ULT(param, state.environment.block_number),
+                    # 블록 주소 타당성 검사
                     ULT(
                         state.environment.block_number,
                         symbol_factory.BitVecVal(2**255, 256),
@@ -181,8 +189,9 @@ class PredictableVariables(DetectionModule):
                         PredictableValueAnnotation("The block hash of a previous block")
                     )
             else:
+                # https://kwjdnjs.tistory.com/23
                 # Always create an annotation when COINBASE, GASLIMIT, TIMESTAMP or NUMBER is executed.
-
+                #                               채굴자 address, gas limit, time stamp, Block Number
                 state.mstate.stack[-1].annotate(
                     PredictableValueAnnotation(
                         "The block.{} environment variable".format(opcode.lower())

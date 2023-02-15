@@ -20,6 +20,8 @@ from mythril.laser.ethereum.transaction.transaction_models import (
 from mythril.laser.smt import symbol_factory, Or, Bool, BitVec
 from mythril.support.support_args import args as cmd_args
 
+from mythril.interfaces.show_class_structure import show_class_structure
+
 
 FUNCTION_HASH_BYTE_LENGTH = 4
 
@@ -89,16 +91,9 @@ def generate_function_constraints(
     for i in range(FUNCTION_HASH_BYTE_LENGTH):
         constraint = Bool(False)
         for func_hash in func_hashes:
-            if func_hash == -1:
-                # Fallback function without calldata
-                constraint = Or(constraint, calldata.size < 4)
-            elif func_hash == -2:
-                # Receive function
-                constraint = Or(constraint, calldata.size == 0)
-            else:
-                constraint = Or(
-                    constraint, calldata[i] == symbol_factory.BitVecVal(func_hash[i], 8)
-                )
+            constraint = Or(
+                constraint, calldata[i] == symbol_factory.BitVecVal(func_hash[i], 8)
+            )
         constraints.append(constraint)
     return constraints
 
@@ -175,6 +170,9 @@ def execute_contract_creation(
         next_transaction_id = tx_id_manager.get_next_tx_id()
         # call_data "should" be '[]', but it is easier to model the calldata symbolically
         # and add logic in codecopy/codesize/calldatacopy/calldatasize than to model code "correctly"
+        '''
+        call_data는 '[]'여야 하지만, 호출 데이터를 기호적으로 모델링하고 논리 코덱 복사/코드 크기/호출 데이터 복사/호출 데이터 크기를 추가하는 것이 "호출된" 모델 코드보다 더 쉽습니다
+        '''
         transaction = ContractCreationTransaction(
             world_state=open_world_state,
             identifier=next_transaction_id,
@@ -238,6 +236,7 @@ def _setup_global_state_for_execution(
         new_node.constraints = global_state.world_state.constraints
 
     global_state.world_state.transaction_sequence.append(transaction)
+    #show_class_structure(global_state.world_state.transaction_sequence)
     global_state.node = new_node
     new_node.states.append(global_state)
     laser_evm.work_list.append(global_state)

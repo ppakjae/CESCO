@@ -19,6 +19,9 @@ from mythril.ethereum.interface.rpc.exceptions import ConnectionError
 from mythril.solidity.soliditycontract import SolidityContract, get_contracts_from_file
 from mythril.support.support_args import args
 
+########
+from mythril.interfaces import show_class_structure
+
 from eth_utils import int_to_big_endian
 
 log = logging.getLogger(__name__)
@@ -64,7 +67,8 @@ class MythrilDisassembler:
             main_version = solc.get_solc_version_string()
         except:
             main_version = ""  # allow missing solc will download instead
-        main_version_number = re.search(r"\d+.\d+.\d+", main_version)
+        ## 정규 표현식 \d는 숫자를 의미 즉 0.0.0과 같은지 체크
+        main_version_number = re.match(r"\d+.\d+.\d+", main_version)
 
         if version.startswith("v"):
             version = version[1:]
@@ -223,6 +227,8 @@ class MythrilDisassembler:
                 log.error(
                     "The file " + file + " does not contain a compilable contract."
                 )
+        
+        #show_class_structure.show_class_structure(contracts[-1], "")
 
         return address, contracts
 

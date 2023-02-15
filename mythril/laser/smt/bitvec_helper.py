@@ -199,7 +199,7 @@ def Sum(*args: BitVec) -> BitVec:
 
 def BVAddNoOverflow(a: Union[BitVec, int], b: Union[BitVec, int], signed: bool) -> Bool:
     """Creates predicate that verifies that the addition doesn't overflow.
-
+        오버플로 되지 않는 지 확인 하는 술어를 만든다.
     :param a:
     :param b:
     :param signed:

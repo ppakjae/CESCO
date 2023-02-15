@@ -31,6 +31,9 @@ from mythril.laser.ethereum.transaction import (
 from mythril.laser.smt import symbol_factory
 from mythril.support.support_args import args
 
+from mythril.interfaces.show_class_structure import show_class_structure
+import pprint
+
 log = logging.getLogger(__name__)
 
 
@@ -157,6 +160,11 @@ class LaserEVM:
         Or we execute the creation code of a contract, in which case the creation code and desired name of that
         contract should be provided.
 
+        두가지 실행모드가 존재.
+
+        사전 구성된 구성을 분석하거나, 이 경우에는 world_state, target address변수를 제공해야한다.
+        또는 계약의 작성 코드를 실행하며, 이 경우에는 계약의 작성 코드와 원하는 이름을 제공해야함.
+
         :param world_state The world state configuration from which to perform analysis
         :param target_address The address of the contract account in the world state which analysis should target
         :param creation_code The creation code to create the target contract in the symbolic environment
@@ -230,7 +238,7 @@ class LaserEVM:
 
     def _execute_transactions(self, address):
         """This function executes multiple transactions on the address
-
+        이 함수는 주소에서 여러 트랜잭션을 실행합니다
         :param address: Address of the contract
         :return:
         """
@@ -240,7 +248,6 @@ class LaserEVM:
             if len(self.open_states) == 0:
                 break
             old_states_count = len(self.open_states)
-
             if self.use_reachability_check:
                 self.open_states = [
                     state
@@ -258,14 +265,10 @@ class LaserEVM:
             func_hashes = (
                 args.transaction_sequences[i] if args.transaction_sequences else None
             )
-
             if func_hashes:
-                for itr, func_hash in enumerate(func_hashes):
-                    if func_hash in (-1, -2):
-                        func_hashes[itr] = func_hash
-                    else:
-                        func_hashes[itr] = bytes.fromhex(hex(func_hash)[2:])
-
+                func_hashes = [
+                    bytes.fromhex(hex(func_hash)[2:]) for func_hash in func_hashes
+                ]
             for hook in self._start_sym_trans_hooks:
                 hook()
 
@@ -302,7 +305,10 @@ class LaserEVM:
             hook()
 
         for global_state in self.strategy:
-
+            # show_class_structure(global_state)
+            if create:
+                # 이부분 확인
+                print(self._check_create_termination())
             if create and self._check_create_termination():
                 log.debug("Hit create timeout, returning.")
                 return final_states + [global_state] if track_gas else None
@@ -324,8 +330,10 @@ class LaserEVM:
                     for state in new_states
                     if state.world_state.constraints.is_possible()
                 ]
+
             self.manage_cfg(op_code, new_states)  # TODO: What about op_code is None?
             if new_states:
+                # work_list에 append되면서 strategy의 인자인 work_list가 바뀌어서 global_state도 바뀌는 느낌
                 self.work_list += new_states
             elif track_gas:
                 final_states.append(global_state)
@@ -652,7 +660,7 @@ class LaserEVM:
             )
 
         for op_code, funcs in hook_dict.items():
-            entrypoint[op_code].extend(funcs)
+            entrypoint[op_code].extend(funcs) # funcs는 module.execute
 
     def register_laser_hooks(self, hook_type: str, hook: Callable):
         """registers the hook with this Laser VM"""
@@ -720,7 +728,10 @@ class LaserEVM:
         if op_code not in self.pre_hooks.keys():
             return
         for hook in self.pre_hooks[op_code]:
+            # print(hook)
             hook(global_state)
+            # pprint(hook(global_state))
+            # show_class_structure(hook(global_state))
 
     def _execute_post_hook(
         self, op_code: str, global_states: List[GlobalState]

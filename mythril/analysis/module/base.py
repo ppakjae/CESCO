@@ -26,6 +26,7 @@ class EntryPoint(Enum):
 
     POST = 1
     CALLBACK = 2
+    COMPILE = 3
 
 
 class DetectionModule(ABC):
@@ -76,6 +77,7 @@ class DetectionModule(ABC):
         :return: List of encountered issues
         """
 
+
         log.debug("Entering analysis module: {}".format(self.__class__.__name__))
 
         if (
@@ -89,12 +91,17 @@ class DetectionModule(ABC):
 
         result = self._execute(target)
         log.debug("Exiting analysis module: {}".format(self.__class__.__name__))
-
+        
         if result and not args.use_issue_annotations:
             if self.auto_cache:
                 self.update_cache(result)
             self.issues += result
 
+        return result
+    
+    def execute1(self, target: str) -> Optional[List[Issue]]:
+        result = self._execute(target)
+        self.issues += result
         return result
 
     @abstractmethod
@@ -105,6 +112,7 @@ class DetectionModule(ABC):
         :return: List of encountered issues
         """
         pass
+
 
     def __repr__(self) -> str:
         return (

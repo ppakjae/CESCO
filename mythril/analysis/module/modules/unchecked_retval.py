@@ -17,6 +17,19 @@ from mythril.laser.ethereum.state.global_state import GlobalState
 import logging
 from typing_extensions import TypedDict
 
+from mythril.laser.smt import (
+    BVAddNoOverflow,
+    BVSubNoUnderflow,
+    BVMulNoOverflow,
+    BitVec,
+    If,
+    symbol_factory,
+    Not,
+    Expression,
+    Bool,
+    And,
+)
+
 log = logging.getLogger(__name__)
 
 
@@ -84,6 +97,8 @@ class UncheckedRetval(DetectionModule):
                     """
                     To check whether retval is unconstrained we are checking it against retval = 0 and retval = 1
                     """
+                    # print(retval["retval"])
+                    # print(retval["retval"] == symbol_factory.BitVecVal(1))
                     solver.get_transaction_sequence(
                         state, state.world_state.constraints + [retval["retval"] == 1]
                     )
@@ -115,7 +130,7 @@ class UncheckedRetval(DetectionModule):
                 )
                 conditions = [
                     And(*(state.world_state.constraints + [retval["retval"] == 1])),
-                    And(*(state.world_state.constraints + [retval["retval"] == 0])),
+                    And(*(state.world_state.constraints + [retval["retval"] == 1])),
                 ]
 
                 state.annotate(

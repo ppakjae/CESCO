@@ -44,10 +44,13 @@ class MultipleSends(DetectionModule):
         """
         instruction = state.get_current_instruction()
 
+        # Global State에서 MultipleSendsAnnotation 가져와서 list[]형태로 만들어주기
         annotations = cast(
             List[MultipleSendsAnnotation],
             list(state.get_annotations(MultipleSendsAnnotation)),
         )
+
+        # 빈 리스트이면 객체 생성
         if len(annotations) == 0:
             state.annotate(MultipleSendsAnnotation())
             annotations = cast(
@@ -61,7 +64,7 @@ class MultipleSends(DetectionModule):
             call_offsets.append(state.get_current_instruction()["address"])
 
         else:  # RETURN or STOP
-
+            # 최초 호출은 상관이 없으니 이후에 발생하는 것에 대해서 에러
             for offset in call_offsets[1:]:
                 try:
                     transaction_sequence = get_transaction_sequence(
@@ -76,6 +79,13 @@ class MultipleSends(DetectionModule):
                     "only executes one external call or "
                     "make sure that all callees can be trusted (i.e. they’re part of your own codebase)."
                 )
+                '''
+                "이 통화는 동일한 트랜잭션 내의 다른 통화에 이어 실행됩니다. 
+                이전 호출이 영구적으로 실패하면 호출이 실행되지 않을 수 있습니다.
+                 이 문제는 악의적인 호출자에 의해 의도적으로 발생할 수 있습니다. 
+                 가능하면 각 트랜잭션이 하나의 외부 통화만 실행하도록 코드를 리팩터링하거나 
+                 모든 통화자를 신뢰할 수 있는지 확인하십시오(즉, 사용자 자신의 코드베이스의 일부임)."
+                '''
 
                 issue = Issue(
                     contract=state.environment.active_account.contract_name,

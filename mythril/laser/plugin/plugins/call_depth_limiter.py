@@ -20,11 +20,13 @@ class CallDepthLimit(LaserPlugin):
         """Initializes the mutation pruner
 
         Introduces hooks for SSTORE operations
+        STORE 작업을 위한 후크 도입
         :param symbolic_vm:
         :return:
         """
 
         @symbolic_vm.pre_hook("CALL")
         def sstore_mutator_hook(global_state: GlobalState):
+            # transaction 수가 call 하나와 같으므로
             if len(global_state.transaction_stack) - 1 == self.call_depth_limit:
                 raise PluginSkipState

@@ -33,6 +33,13 @@ def get_model(
     :param maximize: Tuple of maximization conditions
     :param enforce_execution_time: Bool variable which enforces --execution-timeout's time
     :return:
+    지정된 제약 조건을 기반으로 모델을 튜플로 반환합니다
+    :매개 변수 제약 조건: 제약 조건의 튜플
+    :param 최소화: 최소화 조건의 튜플
+    :파라미터 최대화: 최대화 조건의 튜플
+    :param enforce_execution_time: 강제하는 부울 변수 --execution-timeout's time
+    : 반환:
+    Symoblic execution이 도달이 가능한지
     """
     s = Optimize()
     timeout = solver_timeout or args.solver_timeout

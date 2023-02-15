@@ -32,6 +32,18 @@ class Disassembly(object):
         self.address_to_function_name = {}  # type: Dict[int, str]
         self.enable_online_lookup = enable_online_lookup
         self.assign_bytecode(bytecode=code)
+        
+        '''
+        print("====================Disassembly====================")
+        self.printDetail("bytecode")
+        self.printDetail("instruction_list")
+        self.printDetail("func_hashes")
+        self.printDetail("function_name_to_address")
+        self.printDetail("address_to_function_name")
+        self.printDetail("enable_online_lookup")
+        self.printDetail("assign_bytecode")
+        print("===================================================")
+        '''
 
     def assign_bytecode(self, bytecode):
         self.bytecode = bytecode
@@ -59,7 +71,33 @@ class Disassembly(object):
         :return:
         """
         return asm.instruction_list_to_easm(self.instruction_list)
-
+        
+        
+    def printDetail(self, value):
+        print()
+        print("self." + value)
+        
+        #value = self.value
+        
+        if value == "bytecode":
+            value = self.bytecode
+        elif value == "instruction_list":
+            value = self.instruction_list
+        elif value == "func_hashes":
+            value = self.func_hashes
+        elif value == "function_name_to_address":
+            value = self.function_name_to_address        
+        elif value == "address_to_function_name":
+            value = self.address_to_function_name
+        elif value == "enable_online_lookup":
+            value = self.enable_online_lookup     
+        elif value == "assign_bytecode":
+            value = self.assign_bytecode
+            
+        print(type(value))
+        print(value)
+        print()
+        
 
 def get_function_info(
     index: int, instruction_list: list, signature_database: SignatureDB
@@ -112,3 +150,4 @@ def get_function_info(
         return function_hash, None, None
 
     return function_hash, entry_point, function_name
+

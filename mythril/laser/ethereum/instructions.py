@@ -912,18 +912,11 @@ class Instruction:
         """
         state = global_state.mstate
         address = state.stack.pop()
-        onchain_access = True
         if address.symbolic is False:
-            try:
-                balance = global_state.world_state.accounts_exist_or_load(
-                    address.value, self.dynamic_loader
-                ).balance()
-            except ValueError:
-                onchain_access = False
+            balance = global_state.world_state.accounts_exist_or_load(
+                address.value, self.dynamic_loader
+            ).balance()
         else:
-            onchain_access = False
-
-        if onchain_access is False:
             balance = symbol_factory.BitVecVal(0, 256)
             for account in global_state.world_state.accounts.values():
                 balance = If(address == account.address, account.balance(), balance)
@@ -1349,7 +1342,7 @@ class Instruction:
         for i in range(concrete_size):
             global_state.mstate.memory[concrete_memory_offset + i] = (
                 global_state.last_return_data[concrete_return_offset + i]
-                if concrete_return_offset + i < global_state.last_return_data.size
+                if i < global_state.last_return_data.size
                 else 0
             )
 
@@ -1578,7 +1571,6 @@ class Instruction:
             global_state.mstate.max_gas_used += max_gas
             return [global_state]
         # False case
-
         negated = (
             simplify(Not(condition)) if isinstance(condition, Bool) else condition == 0
         )
