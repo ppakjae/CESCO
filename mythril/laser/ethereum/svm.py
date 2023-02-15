@@ -306,9 +306,9 @@ class LaserEVM:
 
         for global_state in self.strategy:
             # show_class_structure(global_state)
-            if create:
+            # if create:
                 # 이부분 확인
-                print(self._check_create_termination())
+                # print(self._check_create_termination())
             if create and self._check_create_termination():
                 log.debug("Hit create timeout, returning.")
                 return final_states + [global_state] if track_gas else None

@@ -14,6 +14,7 @@ from mythril.analysis.module.modules.exceptions import Exceptions
 from mythril.analysis.module.modules.external_calls import ExternalCalls
 from mythril.analysis.module.modules.integer import IntegerArithmetics
 from mythril.analysis.module.modules.multiple_sends import MultipleSends
+from mythril.analysis.module.modules.requirement_violation import ReViolation
 from mythril.analysis.module.modules.state_change_external_calls import (
     StateChangeAfterCall,
 )
@@ -100,6 +101,7 @@ class ModuleLoader(object, metaclass=Singleton):
                 ExternalCalls(),
                 IntegerArithmetics(),
                 MultipleSends(),
+                ReViolation(),
                 StateChangeAfterCall(),
                 AccidentallyKillable(),
                 UncheckedRetval(),
