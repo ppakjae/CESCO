@@ -40,24 +40,25 @@ class DeprecatedFunctionsUsage(DetectionModule):
         super().reset_module()
 
     def _execute(self, path) -> None:
-        """
-
-        :param state:
-        :return:
-        """
+        
+        all_issues=[]
+        
+        description_head = ("Several functions and operators in Solidity are deprecated."
+                            "Using them leads to reduced code quality."
+                            "With new major versions of the Solidity compiler, deprecated functions and operators may result in side effects and compile errors."
+        )  
 
         with open(path) as f:
+            lineno = 0
             for line in f.read().split("\n"):
+                lineno += 1
                 deprecated_functions = ["suicide(", "block.blockhash(", "sha3(", "callcode(", "throw", "msg.gas", "constant", "var"]
                 if "contract" in line:
                     contract = line.split(" ")[1]
                 elif "function" in line:
-                    function_name = line.split(" ", 1)[1][:-2]
+                    function_name = line.strip().split(" ", 1)[1][:-9]
                 for func in deprecated_functions:
-                    lineno = 0
                     if func in line:
-                        lineno += 1
-                        # print(line.strip())
                         issue = Issue(
                             contract=contract,
                             function_name=function_name,
@@ -67,10 +68,11 @@ class DeprecatedFunctionsUsage(DetectionModule):
                             bytecode="",
                             title="DEPRECATED_FUNCTIONS_USAGE",
                             severity="severity",
-                            description_head=str(line.strip())+": this function is deprecated",
-                            description_tail="description_tail",
-                        )
-        return [issue]
+                            description_head=description_head,
+                            description_tail="line " + str(lineno) + ": " +  str(line.strip()) + " this function is deprecated"                        )
+                        all_issues.append(issue)
+        
+        return all_issues
 
         # return self._analyze_state(state, path)
 
