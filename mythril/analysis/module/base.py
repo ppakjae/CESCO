@@ -100,8 +100,12 @@ class DetectionModule(ABC):
         return result
     
     def execute1(self, target: str) -> Optional[List[Issue]]:
+        log.debug("Entering analysis module: {}".format(self.__class__.__name__))
+
         result = self._execute(target)
+        log.debug("Exiting analysis module: {}".format(self.__class__.__name__))
         self.issues += result
+
         return result
 
     @abstractmethod
