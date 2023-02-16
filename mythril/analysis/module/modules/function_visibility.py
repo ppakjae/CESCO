@@ -4,9 +4,8 @@ import logging
 import re
 from typing import List, Optional
 from mythril.laser.ethereum.state.global_state import GlobalState
+from mythril.analysis.swc_data import DEFAULT_FUNCTION_VISIBILITY
 
-
-FUNCTION_DEFAULT_VISIBILITY = 100
 
 DESCRIPTION = """
 In Solidity, when using a function, a function visibility must be used.
@@ -20,9 +19,9 @@ log = logging.getLogger(__name__)
 class CheckVisibility(DetectionModule):
 
     name = "Function Visibility is not declared"
-    swc_id = FUNCTION_DEFAULT_VISIBILITY
+    swc_id = DEFAULT_FUNCTION_VISIBILITY
     description = DESCRIPTION
-    # entry_point = EntryPoint.COMPILER
+    entry_point = EntryPoint.COMPILE
 
     def __init__(self):
         super().__init__()
@@ -63,14 +62,12 @@ class CheckVisibility(DetectionModule):
                     elif "internal" in read_line:
                         pass
                     else:
-                        print("contract: ", contract)
-                        print("function_time: ", function_name)
-                        print("address: ", address)
                         issue = Issue(
                             contract= contract,
                             function_name = function_name,
-                            address = "line number is " + str(address),
-                            swc_id = FUNCTION_DEFAULT_VISIBILITY,
+                            # address = "line number is " + str(address),
+                            address = -1,
+                            swc_id = DEFAULT_FUNCTION_VISIBILITY,
                             bytecode="",
                             title="Not Declare function visibility",
                             severity = "MID",
@@ -81,5 +78,7 @@ class CheckVisibility(DetectionModule):
 
         except:
             pass
+
+        return all_issues
 
 detector = CheckVisibility()
