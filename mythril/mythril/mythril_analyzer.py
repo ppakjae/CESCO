@@ -21,11 +21,8 @@ from mythril.support.start_time import StartTime
 from mythril.exceptions import DetectorNotFoundError
 from mythril.laser.execution_info import ExecutionInfo
 
-from mythril.analysis.module.base import DetectionModule
-from mythril.analysis.module.modules.function_visibility import CheckVisibility, detector
-from mythril.analysis.module.modules.old_compiler import CheckOldCompiler
-
-from mythril.analysis.module.modules.deprecated_functions import DeprecatedFunctionsUsage
+from mythril.analysis.module import ModuleLoader
+from mythril.analysis.module.base import EntryPoint
 
 log = logging.getLogger(__name__)
 
@@ -146,13 +143,12 @@ class MythrilAnalyzer:
         exceptions = []
         execution_info = None  # type: Optional[List[ExecutionInfo]]
         # EntryPoint Compile 실행 위치
-        # detector = CheckVisibility()
-        depre = DeprecatedFunctionsUsage()
-        compile_hooks: List[Callable] = [detector.execute1, depre.execute1]
+        compile_hooks: List[Callable] = []
+        for module in ModuleLoader().get_detection_modules(entry_point=EntryPoint.COMPILE):
+            compile_hooks.append(module.execute1)
         path = ""
         if self.solidity_files:
             path = self.solidity_files[0]
-            # print(type(path))
             for hook in compile_hooks:
                 hook(path)
                 # OldCompiler.excute(path)
@@ -191,7 +187,8 @@ class MythrilAnalyzer:
                 issues = retrieve_callback_issues(modules)
                 exceptions.append(traceback.format_exc())
             for issue in issues:
-                issue.add_code_info(contract)
+                if issue.transaction_sequence != None:
+                    issue.add_code_info(contract)
 
             all_issues += issues
             log.info("Solver statistics: \n{}".format(str(SolverStatistics())))

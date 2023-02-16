@@ -48,3 +48,10 @@ def reset_callback_modules(module_names: Optional[List[str]] = None):
     modules = ModuleLoader().get_detection_modules(EntryPoint.CALLBACK, module_names)
     for module in modules:
         module.reset_module()
+
+
+def reset_compile_modules(module_names: Optional[List[str]] = None):
+    """Clean the issue records of every compile-based module."""
+    modules = ModuleLoader().get_detection_modules(EntryPoint.COMPILE, module_names)
+    for module in modules:
+        module.reset_module()
