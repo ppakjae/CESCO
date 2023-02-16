@@ -27,8 +27,7 @@ class DeprecatedFunctionsUsage(DetectionModule):
     name = "Contract uses deprecated Solidity functions"
     swc_id = DEPRECATED_FUNCTIONS_USAGE
     description = DESCRIPTION
-    entry_point = EntryPoint.CALLBACK
-    pre_hooks = ["SELFDESTRUCT"]
+    entry_point = EntryPoint.COMPILE
 
     def __init__(self):
         super().__init__()
@@ -40,17 +39,42 @@ class DeprecatedFunctionsUsage(DetectionModule):
         """
         super().reset_module()
 
-    def _execute(self, state: GlobalState, path) -> None:
+    def _execute(self, path) -> None:
         """
 
         :param state:
         :return:
         """
-        
 
-        return self._analyze_state(state, path)
+        with open(path) as f:
+            for line in f.read().split("\n"):
+                deprecated_functions = ["suicide(", "block.blockhash(", "sha3(", "callcode(", "throw", "msg.gas", "constant", "var"]
+                if "contract" in line:
+                    contract = line.split(" ")[1]
+                elif "function" in line:
+                    function_name = line.split(" ", 1)[1][:-2]
+                for func in deprecated_functions:
+                    lineno = 0
+                    if func in line:
+                        lineno += 1
+                        # print(line.strip())
+                        issue = Issue(
+                            contract=contract,
+                            function_name=function_name,
+                            # address="line number is " + str(lineno),
+                            address=lineno,
+                            swc_id=DEPRECATED_FUNCTIONS_USAGE,
+                            bytecode="",
+                            title="DEPRECATED_FUNCTIONS_USAGE",
+                            severity="severity",
+                            description_head=str(line.strip())+": this function is deprecated",
+                            description_tail="description_tail",
+                        )
+        return [issue]
 
-    def _analyze_state(self, state, path):
+        # return self._analyze_state(state, path)
+
+    def _analyze_state(self, state):
         log.info("Suicide module: Analyzing suicide instruction")
         instruction = state.get_current_instruction()
 

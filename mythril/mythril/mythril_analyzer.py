@@ -24,6 +24,9 @@ from mythril.laser.execution_info import ExecutionInfo
 from mythril.analysis.module.base import DetectionModule
 from mythril.analysis.module.modules.function_visibility import CheckVisibility, detector
 from mythril.analysis.module.modules.old_compiler import CheckOldCompiler
+
+from mythril.analysis.module.modules.deprecated_functions import DeprecatedFunctionsUsage
+
 log = logging.getLogger(__name__)
 
 
@@ -144,7 +147,8 @@ class MythrilAnalyzer:
         execution_info = None  # type: Optional[List[ExecutionInfo]]
         # EntryPoint Compile 실행 위치
         # detector = CheckVisibility()
-        compile_hooks: List[Callable] = [detector.execute1]
+        depre = DeprecatedFunctionsUsage()
+        compile_hooks: List[Callable] = [detector.execute1, depre.execute1]
         path = ""
         if self.solidity_files:
             path = self.solidity_files[0]
