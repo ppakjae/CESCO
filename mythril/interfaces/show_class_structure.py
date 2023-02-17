@@ -1,7 +1,7 @@
 import logging
 from typing import  Optional
 
-logging.basicConfig(filename="logefile.log", filemode="w", level=logging.WARNING)
+logging.basicConfig(filename="logfile.log", filemode="w", level=logging.WARNING)
 
 def show_class_structure(target, option: Optional[str] = ""):
 
