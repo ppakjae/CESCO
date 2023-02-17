@@ -1,6 +1,9 @@
 
 # Created by https://www.gitignore.io/api/linux,macos,python,windows
 
+## CESCO ##
+logfile.log
+
 ### Linux ###
 *~
 
