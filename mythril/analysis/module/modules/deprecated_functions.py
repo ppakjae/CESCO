@@ -40,6 +40,8 @@ class DeprecatedFunctionsUsage(DetectionModule):
         super().reset_module()
 
     def _execute(self, path) -> None:
+
+        log.info("Depreacted functions usage module: Analyzing solidity file lines")
         
         all_issues=[]
         

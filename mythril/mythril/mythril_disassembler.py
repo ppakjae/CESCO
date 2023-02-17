@@ -74,6 +74,8 @@ class MythrilDisassembler:
             version = version[1:]
         if version and NpmSpec("^0.8.0").match(Version(version)):
             args.use_integer_module = False
+        if version and NpmSpec("^0.5.0").match(Version(version)):
+            args.use_deprecated_functions_module = False
         if version == main_version_number:
             log.info("Given version matches installed version")
             solc_binary = os.environ.get("SOLC") or "solc"

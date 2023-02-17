@@ -18,6 +18,7 @@ class Args(object, metaclass=Singleton):
         self.solver_log = None
         self.transaction_sequences: List[List[str]] = None
         self.use_integer_module = True
+        self.use_deprecated_functions_module = True
         self.use_issue_annotations = False
         self.solc_args = None
 

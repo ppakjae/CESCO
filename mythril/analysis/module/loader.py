@@ -87,6 +87,12 @@ class ModuleLoader(object, metaclass=Singleton):
                 for module in result
                 if type(module).__name__ != "IntegerArithmetics"
             ]
+        if args.use_deprecated_functions_module is False:
+            result = [
+                module
+                for module in result
+                if type(module).__name__ != "DeprecatedFunctionsUsage"
+            ]
         if entry_point:
             result = [module for module in result if module.entry_point == entry_point]
 
