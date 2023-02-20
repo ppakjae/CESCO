@@ -39,29 +39,28 @@ class CheckVisibility(DetectionModule):
             contract = ""
             lineno = 0
             function_name = ""
+            visibility = ["public", "private", "internal", "external"]
+            
             while(True):
+                check = False
                 lineno += 1
                 read_line = f.readline()
-                if read_line == "":
+                
+                if read_line == "": # EOF
                     return all_issues
                 
                 if "contract" in read_line:
                     contract = read_line.split(" ")[1]
 
                 elif "function" in read_line:
-
                     # if re.findall("r'(public|private|external|internal)/g", read_line) == None:
                     function_name = read_line.split(" ", 1)[1][:-2]
                     # print(re.findall("r'([private]]*)/g", read_line))
-                    if "public" in read_line:
-                        pass
-                    elif "private" in read_line:
-                        pass
-                    elif "external" in read_line:
-                        pass
-                    elif "internal" in read_line:
-                        pass
-                    else:
+                    for std in visibility:
+                        if std in read_line:
+                            check = True
+                    
+                    if check == False:
                         issue = Issue(
                             contract= contract,
                             function_name = function_name,
@@ -75,6 +74,7 @@ class CheckVisibility(DetectionModule):
                             description_tail="",
                         )
                         all_issues.append(issue)
+                        
 
         except:
             pass

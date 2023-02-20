@@ -24,7 +24,7 @@ class CheckOldCompiler(DetectionModule):
     name = "Contract version is outdated"
     swc_id = "{} {}".format(OUT_DESCRIPTION, FLO_DESCRIPTION)
     description = DESCRIPTION
-    # entry_point = EntryPoint.COMPILER # EntryPoint 를 설정하면 될라나?
+    entry_point = EntryPoint.COMPILE 
 
     def __init__(self):
         super().__init__
