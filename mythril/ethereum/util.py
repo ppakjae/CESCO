@@ -180,6 +180,7 @@ def extract_binary(file: str) -> str:
         args.use_integer_module = False
     if version and NpmSpec("^0.5.0").match(Version(version)):
         args.use_deprecated_functions_module = False
+        args.use_functions_visibility_module = False
     if version is None:
         return os.environ.get("SOLC") or "solc"
     return solc_exists(version)

@@ -37,10 +37,10 @@ class CheckVisibility(DetectionModule):
         
         try:
             contract = ""
-            address = 0
+            lineno = 0
             function_name = ""
             while(True):
-                address += 1
+                lineno += 1
                 read_line = f.readline()
                 if read_line == "":
                     return all_issues
@@ -66,7 +66,7 @@ class CheckVisibility(DetectionModule):
                             contract= contract,
                             function_name = function_name,
                             # address = "line number is " + str(address),
-                            address = -1,
+                            address = lineno,
                             swc_id = DEFAULT_FUNCTION_VISIBILITY,
                             bytecode="",
                             title="Not Declare function visibility",
