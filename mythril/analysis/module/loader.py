@@ -14,7 +14,6 @@ from mythril.analysis.module.modules.exceptions import Exceptions
 from mythril.analysis.module.modules.external_calls import ExternalCalls
 from mythril.analysis.module.modules.integer import IntegerArithmetics
 from mythril.analysis.module.modules.multiple_sends import MultipleSends
-from mythril.analysis.module.modules.requirement_violation import ReViolation
 from mythril.analysis.module.modules.state_change_external_calls import (
     StateChangeAfterCall,
 )
@@ -22,10 +21,13 @@ from mythril.analysis.module.modules.suicide import AccidentallyKillable
 from mythril.analysis.module.modules.unchecked_retval import UncheckedRetval
 from mythril.analysis.module.modules.user_assertions import UserAssertions
 
-
+# -----------------------------------------우리가 개발한 모듈-----------------------------------------------------------------#
 from mythril.analysis.module.modules.deprecated_functions import DeprecatedFunctionsUsage
 from mythril.analysis.module.modules.function_visibility import CheckVisibility
 from mythril.analysis.module.modules.old_compiler import CheckOldCompiler
+from mythril.analysis.module.modules.requirement_violation import ReViolation
+from mythril.analysis.module.modules.transaction_order_dependency import TransactionOrderDependency
+
 
 from mythril.analysis.module.base import EntryPoint
 
@@ -118,13 +120,15 @@ class ModuleLoader(object, metaclass=Singleton):
                 ExternalCalls(),
                 IntegerArithmetics(),
                 MultipleSends(),
-                ReViolation(),
                 StateChangeAfterCall(),
                 AccidentallyKillable(),
                 UncheckedRetval(),
                 UserAssertions(),
+
                 DeprecatedFunctionsUsage(),
                 CheckVisibility(),
                 CheckOldCompiler(),
+                ReViolation(),
+                TransactionOrderDependency(),
             ]
         )
