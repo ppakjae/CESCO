@@ -142,6 +142,7 @@ class MythrilAnalyzer:
         SolverStatistics().enabled = True
         exceptions = []
         execution_info = None  # type: Optional[List[ExecutionInfo]]
+        
         # EntryPoint Compile 실행 위치
         compile_hooks: List[Callable] = []
         for module in ModuleLoader().get_detection_modules(entry_point=EntryPoint.COMPILE):

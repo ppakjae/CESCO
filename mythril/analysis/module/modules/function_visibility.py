@@ -27,7 +27,7 @@ class CheckVisibility(DetectionModule):
         super().__init__()
     
     def reset_module(self):
-        return super().reset_module()
+        super().reset_module()
     
     def _execute(self, path: str) -> List[Issue]:
         

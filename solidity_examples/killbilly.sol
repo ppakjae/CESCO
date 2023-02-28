@@ -1,4 +1,4 @@
-
+pragma solidity 0.5.7;
 
 contract KillBilly {
 	bool public is_killable;
@@ -8,7 +8,7 @@ contract KillBilly {
 		is_killable = false;
 	}
 
-	function killerize(address addr) {
+	function killerize(address addr) public {
 		approved_killers[addr] = true;
 	}
 
