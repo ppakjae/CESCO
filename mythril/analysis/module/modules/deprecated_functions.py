@@ -52,6 +52,8 @@ class DeprecatedFunctionsUsage(DetectionModule):
 
         with open(path) as f:
             lineno = 0
+            contract= ""
+            function_name = ""
             for line in f.read().split("\n"):
                 lineno += 1
                 deprecated_functions = ["suicide(", "block.blockhash(", "sha3(", "callcode(", "throw", "msg.gas", "constant", "var"]
