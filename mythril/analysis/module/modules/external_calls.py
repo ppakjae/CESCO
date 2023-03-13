@@ -80,6 +80,14 @@ class ExternalCalls(DetectionModule):
             constraints = Constraints(
                 [UGT(gas, symbol_factory.BitVecVal(2300, 256)), to == ACTORS.attacker]
             )
+            # constraints = Constraints(
+            #     # 이 라인은 attacker 주소를 직접 들어가는 것.
+            #     [UGT(gas, symbol_factory.BitVecVal(2300, 256)), to == ACTORS.attacker],
+            #     Or( # 이 라인은 제 3 의 주소가 attacker와 연결 됐을 경우.
+            #         to > symbol_factory.BitVecVal(16, 256),
+            #         to == symbol_factory.BitVecVal(0, 256),
+            #     ),
+            # )
 
             solver.get_transaction_sequence(
                 state, constraints + state.world_state.constraints
