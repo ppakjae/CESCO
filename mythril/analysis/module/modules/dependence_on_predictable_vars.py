@@ -16,7 +16,7 @@ from typing import cast, List
 
 log = logging.getLogger(__name__)
 
-predictable_ops = ["COINBASE", "GASLIMIT", "TIMESTAMP", "NUMBER"]
+predictable_ops = ["COINBASE", "GASLIMIT", "TIMESTAMP", "NUMBER", "DIFFICULTY", "ORIGIN", "GASPRICE"]
 
 
 class PredictableValueAnnotation:
