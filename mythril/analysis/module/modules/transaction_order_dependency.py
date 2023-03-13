@@ -43,7 +43,7 @@ class TransactionOrderDependency(DetectionModule):
     swc_id = TRANSACTION_ORDER_DEPENDENCY
     description = DESCRIPTION
     entry_point = EntryPoint.CALLBACK
-    pre_hooks = ["CALL"]
+    post_hooks = ["CALL"]
 
     def _execute(self, state: GlobalState) -> None:
         """
@@ -51,6 +51,7 @@ class TransactionOrderDependency(DetectionModule):
         :param state:
         :return:
         """
+        print("?1entering?")
 
         potential_issues = self._analyze_state(state)
 
@@ -64,12 +65,13 @@ class TransactionOrderDependency(DetectionModule):
         :return:
         """
         try:
-
+            print("?2entering?")
             interesting_storages = list(_get_influencing_storages(state))
             changing_sstores = list(_get_influencing_sstores(state, interesting_storages))
+            print("?3entering?")
 
             if len(changing_sstores) > 0:
-                
+                print("?4entering?")
                 to = state.mstate.stack[-2]
 
                 constraints = (
@@ -82,7 +84,8 @@ class TransactionOrderDependency(DetectionModule):
                 )
 
                 instruction = state.get_current_instruction()
-                issue = Issue(
+                print("?5entering?")
+                issue = PotentialIssue(
                     contract=state.environment.active_account.contract_name,
                     function_name=state.environment.active_function_name,
                     address=instruction["address"],
@@ -96,16 +99,11 @@ class TransactionOrderDependency(DetectionModule):
                     gas_used=(state.mstate.min_gas_used, state.mstate.max_gas_used),
                 )
 
-                state.annotate(
-                    IssueAnnotation(
-                        conditions=[And(*constraints)], issue=issue, detector=self
-                    )
-                )
-
-                return [issue]
         except:
             log.debug("No model found")
-        return []
+            return[]
+        
+        return [issue]
     
 def _get_influencing_storages(state: GlobalState):
     gas = state.mstate.stack[-1]
@@ -113,20 +111,32 @@ def _get_influencing_storages(state: GlobalState):
     value = state.mstate.stack[-3]
     storages = []
 
+    print("start _get_influencing_storages")
+    print("to: ", to)
+    print("value: ", value)
+
+    # 현재 tod.sol에서는 to는 심볼릭이 false이고 value는 symbolic이 true
     if to.symbolic is False:
         storages += _dependent_on_storage(to.value)
     if value.symbolic is False:
         storages += _dependent_on_storage(value.value)
+    print("mid _get_influencing_storages")
+    
+    print("storages: ", storages)
 
     for storage in storages:
         variable = _get_storage_variable(storage, state)
         can_change = _can_change(state.world_state.constraints, variable, gas)
+        print("end _get_influencing_storages")
         if can_change:
             yield storage
 
 def _dependent_on_storage(expression):
         
     pattern = re.compile(r"storage_[a-z0-9_&^]+")
+    print(expression)
+    print(simplify(expression))
+    print(str(None))
     return pattern.findall(str(simplify(expression)))
     
 def _get_storage_variable(storage, state):
@@ -176,13 +186,6 @@ def _get_states_with_opcode(state, opcode):
         for _state in node.states:
             if state.get_current_instruction()["opcode"] == opcode:
                 yield state, node
-
-    
-    
-    
-
-
-
 
 
 detector = TransactionOrderDependency()
